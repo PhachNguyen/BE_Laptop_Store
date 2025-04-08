@@ -10,8 +10,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class StaticResourcesWebConfiguration  implements WebMvcConfigurer {
     // WebMvc: Mở rộng các thíết lập cho Web ( Ex: Ánh xạ tài nguyên tĩnh )
-    @Value("${phachnguyen.upload-file.base-uri}")
+    @Value("${phachnguyen.upload-file.base-uri}") // Biến môi trường
     private String baseUrl;
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/storage/**")

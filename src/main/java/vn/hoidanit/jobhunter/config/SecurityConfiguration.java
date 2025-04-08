@@ -45,7 +45,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    @Order(1)
+
     public SecurityFilterChain filterChain(HttpSecurity http, // Cấu hình security của Spring Security
             customAuthenticationEntrypoint customAuthenticationEntrypoint) throws Exception {
         http
@@ -54,11 +54,13 @@ public class SecurityConfiguration {
                                                  // để FE React gọi API
                 .authorizeHttpRequests(
                         authz -> authz
-                                .requestMatchers("/", "/login", "/api/v1/login","/api/v1/auth/login",
-                                        "/api/v1/auth/refresh","/storage/**",   "/api/v1/files" )
-                                .permitAll() // Cho phép k
-                                // cần phải
-                                // đăng nhập
+                                .requestMatchers("/", "/login",
+                                        "/api/v1/login",
+                                        "/api/v1/auth/login",
+                                        "/api/v1/auth/refresh",
+                                        "/storage/**")
+                                .permitAll()
+
                                 .anyRequest().authenticated()
                 // .anyRequest().permitAll())
                 )

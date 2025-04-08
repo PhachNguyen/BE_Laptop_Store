@@ -6,6 +6,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -44,6 +45,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
+    @Order(1)
     public SecurityFilterChain filterChain(HttpSecurity http, // Cấu hình security của Spring Security
             customAuthenticationEntrypoint customAuthenticationEntrypoint) throws Exception {
         http
@@ -53,7 +55,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(
                         authz -> authz
                                 .requestMatchers("/", "/login", "/api/v1/login","/api/v1/auth/login",
-                                        "/api/v1/auth/refresh","/storage/**" )
+                                        "/api/v1/auth/refresh","/storage/**",   "/api/v1/files" )
                                 .permitAll() // Cho phép k
                                 // cần phải
                                 // đăng nhập
@@ -62,6 +64,7 @@ public class SecurityConfiguration {
                 )
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()) // Bật xác thực JWT
                         .authenticationEntryPoint(customAuthenticationEntrypoint))
+
                 // default exception
                 // .exceptionHandling(
                 // exceptions -> exceptions

@@ -53,7 +53,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(
                         authz -> authz
                                 .requestMatchers("/", "/login", "/api/v1/login","/api/v1/auth/login",
-                                        "/api/v1/auth/refresh" )
+                                        "/api/v1/auth/refresh","/storage/**" )
                                 .permitAll() // Cho phép k
                                 // cần phải
                                 // đăng nhập

@@ -35,7 +35,7 @@ public class FileService {
 
     }
 
-    // Lưu trữ file :
+    // Lưu trữ file User:
     public String store(MultipartFile file, String folder) throws URISyntaxException, IOException {
         // create unique filename
         String finalName = System.currentTimeMillis() + "-" + file.getOriginalFilename();
@@ -48,6 +48,25 @@ public class FileService {
         }
         return finalName;
     }
+//     Lưu trữ file Product
+    public String storeProDuct(Long productId, MultipartFile file) throws URISyntaxException, IOException {
+        // Tạo folder theo từng product
+        String folder = "product-" + productId;
+        createDirectory(baseURI + folder);
+
+        // Tạo tên file duy nhất
+        String finalName = System.currentTimeMillis() + "-" + file.getOriginalFilename();
+
+        URI uri = new URI(baseURI + folder + "/" + finalName);
+        Path path = Paths.get(uri);
+
+        try (InputStream inputStream = file.getInputStream()) {
+            Files.copy(inputStream, path, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        return finalName;
+    }
+
     // Check dung lượng file
     public long getFileLength(String fileName, String folder) throws URISyntaxException {
         URI uri = new URI(baseURI + folder + "/" + fileName);

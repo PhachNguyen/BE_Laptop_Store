@@ -58,7 +58,8 @@ public class SecurityConfiguration {
                                         "/api/v1/login",
                                         "/api/v1/auth/login",
                                         "/api/v1/auth/refresh",
-                                        "/storage/**")
+                                        "/storage/**"
+                                )
                                 .permitAll()
 
                                 .anyRequest().authenticated()

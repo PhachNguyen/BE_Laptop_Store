@@ -74,9 +74,10 @@ public class userController {
     @GetMapping("/users")
     // @CrossOrigin(origins = "http://localhost:3000")
     @ApiMessage("Fetch all users")
-    public ResponseEntity<resultPaginationDTO> getUsers(
-            @Filter Specification<User> spec,
-            Pageable pageable) {
+    public ResponseEntity<resultPaginationDTO> getUsers( // Trả về kiểu dữ lệu phân trang
+            @Filter Specification<User> spec,// Lọc dữ liệu dựa trên yêu cầu sử dụng
+           // Tham số này cho phép phân trang , object Pageable : sẽ được Spring tự điền voi các tham số như page,size,sort
+            Pageable pageable ) {
 
         return ResponseEntity.status(HttpStatus.OK).body(this.userService.fetchAllUser(spec, pageable));
     }

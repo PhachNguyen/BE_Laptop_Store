@@ -14,7 +14,7 @@ public class corsConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Cho phép đường link này truy
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000","http://localhost:5173")); // Cho phép đường link này truy
                                                                                  // cập vào
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE",
                 "OPTIONS")); // Allowed methods

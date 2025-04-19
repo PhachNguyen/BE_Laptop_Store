@@ -1,8 +1,13 @@
 package vn.hoidanit.jobhunter.controller;
 
+import com.turkraft.springfilter.boot.Filter;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.hoidanit.jobhunter.domain.Product;
+import vn.hoidanit.jobhunter.domain.dto.resultPaginationDTO;
 import vn.hoidanit.jobhunter.service.ProductService;
 
 import java.util.List;
@@ -15,9 +20,12 @@ public class ProductController {
         this.productService = productService;
     }
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
-        return ResponseEntity.ok(products);
+    public ResponseEntity<resultPaginationDTO> getAllProducts(
+            @Filter Specification<Product> spec,
+            Pageable pageable
+            ) {
+        return  ResponseEntity.status(HttpStatus.OK).body(this.productService.fetchProducts(spec,pageable));
+
     }
     @PostMapping("/products")
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {

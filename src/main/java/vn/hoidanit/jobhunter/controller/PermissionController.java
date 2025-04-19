@@ -16,6 +16,7 @@ import com.turkraft.springfilter.boot.Filter;
 import jakarta.validation.Valid;
 import vn.hoidanit.jobhunter.domain.Permission;
 
+import vn.hoidanit.jobhunter.domain.dto.resultPaginationDTO;
 import vn.hoidanit.jobhunter.service.PermissionService;
 import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
 import vn.hoidanit.jobhunter.util.error.idInvalidException;

@@ -1,20 +1,31 @@
 package vn.hoidanit.jobhunter.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+
+import java.util.List;
 
 @Entity
+@Table(name = "categories")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Category {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private String id; // ví dụ: "electronics", "fashion"
 
-    @Column(nullable = false, length = 100)
-    private String name;
+    private String label; // ví dụ: "Điện tử", "Thời trang"
 
-    @Column(length = 4000)
-    private String description;
+    //     Một loại có nhiều sản phẩm
+//    mapped : Product là chủ sở hữa quan hệ còn category là phía tham chiếu
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Product> products; // Quan hệ ngược
 }

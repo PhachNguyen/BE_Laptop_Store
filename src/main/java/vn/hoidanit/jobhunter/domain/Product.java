@@ -2,25 +2,21 @@ package vn.hoidanit.jobhunter.domain;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+//import vn.hoidanit.jobhunter.domain.dto.CategoryDeserializer;
 import vn.hoidanit.jobhunter.util.SecurityUtil;
 
 @Entity
 @Table(name = "products")
 @Getter
 @Setter
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,15 +32,27 @@ public class Product {
     private BigDecimal price;
 
     private int stockQuantity;
-
+    private String brand;
+    private String warranty;
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;
     private String updatedBy;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "category_id")
-//    private Category category;
+    //    fetch : LAZY chỉ khi gọi method thì mới hiển thị
+//     EAGER   : Khi load product sẽ kèm theo Category tương ứng
+//@JsonDeserialize(using = CategoryDeserializer.class)
+// Vậy BE sẽ hiểu: "category": "laptop" → ánh xạ thành Category có id = "laptop"
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    //    Khác với Many-to-one là sẽ init table
+    @ElementCollection // Lưu danh sách các giá trị cơ bản
+    @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id")) // Tạo một bảng riêng
+    @Column(name = "image_url") // Chỉ định tên bảng phụ
+    private List<String> images;
+
 
     // Set Create
     @PrePersist

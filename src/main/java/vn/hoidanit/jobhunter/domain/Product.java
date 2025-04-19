@@ -45,7 +45,7 @@ public class Product {
 // Vậy BE sẽ hiểu: "category": "laptop" → ánh xạ thành Category có id = "laptop"
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    private Category category;
+    private Category category; // Object
 
     //    Khác với Many-to-one là sẽ init table
     @ElementCollection // Lưu danh sách các giá trị cơ bản

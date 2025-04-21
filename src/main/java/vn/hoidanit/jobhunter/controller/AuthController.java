@@ -114,6 +114,10 @@ public class AuthController {
         String email = decodeToken.getSubject(); // decodeToken
         // Hàm check user by token + email 
         User currentUserCheck = this.userService.getUserByRefreshTokenAndEmail(refreshToken, email);
+        System.out.println("Token nhận: " + refreshToken);
+        System.out.println("Email: " + email);
+        System.out.println("User tìm thấy: " + currentUserCheck);
+
         if (currentUserCheck == null) {
             throw new idInvalidException("Refresh token is invalid or expired. Please login again.");
         } else {
@@ -149,5 +153,7 @@ public class AuthController {
                     .body(res); // Trả về đối tượng ResLoginDTO
         }
     }
+    // Tạo Login bằng Google
+
 }
 

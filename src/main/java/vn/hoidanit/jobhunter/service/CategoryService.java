@@ -29,13 +29,17 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    public Category update(String id, Category updatedCategory) {
-        if (!categoryRepository.existsById(id)) {
-            throw new IllegalArgumentException("Không tìm thấy danh mục: " + id);
+    public Category update(String id, Category category) {
+        Optional<Category> optional = categoryRepository.findById(id);
+        if (optional.isEmpty()) {
+            throw new RuntimeException("Danh mục không tồn tại");
         }
-        updatedCategory.setId(id);
-        return categoryRepository.save(updatedCategory);
+
+        Category existing = optional.get();
+        existing.setLabel(category.getLabel()); // Chỉ cho update label
+        return categoryRepository.save(existing);
     }
+
 
     public void delete(String id) {
         categoryRepository.deleteById(id);

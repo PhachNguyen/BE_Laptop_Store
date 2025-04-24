@@ -26,6 +26,7 @@ public class userDetailCustom implements UserDetailsService {
         // TODO Auto-generated method stub
         vn.hoidanit.jobhunter.domain.User user = this.userService.handlerGetUserbyUserName(username);
         return new User(
+//                user.getId();
                 user.getEmail(),
                 user.getPassword(),
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));

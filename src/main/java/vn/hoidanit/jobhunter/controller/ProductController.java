@@ -47,6 +47,18 @@ public class ProductController {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
+// Hàm fetch theo sản phẩm
+
+@GetMapping("/products/{id}")
+public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+    Product product = productService.getProductById(id);
+    if (product != null) {
+        return ResponseEntity.ok(product);
+    } else {
+        return ResponseEntity.notFound().build();
+    }
+}
+
 
 
 

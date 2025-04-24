@@ -44,12 +44,20 @@ public class userService {
         if (currentUser != null) {
             currentUser.setName(reqUser.getName());
             currentUser.setEmail(reqUser.getEmail());
-            currentUser.setPassword(reqUser.getPassword());
-            // Update
+            currentUser.setAddress(reqUser.getAddress());
+            currentUser.setAge(reqUser.getAge());
+            currentUser.setGender(reqUser.getGender());
+            // Nếu reqUser.getPassword() rỗng thì giữ nguyên password cũ
+            if (reqUser.getPassword() != null && !reqUser.getPassword().isBlank()) {
+                currentUser.setPassword(reqUser.getPassword());
+            }
+            currentUser.setAvatar(reqUser.getAvatar());
+            // ... các field khác
             currentUser = this.userRepository.save(currentUser);
         }
         return currentUser;
     }
+
 
     // Hàm delete user
     public void handleDeleteUser(long id) {
@@ -146,5 +154,10 @@ public class userService {
     // Hàm check tt user
     public User getUserByRefreshTokenAndEmail(String token, String email){
         return this.userRepository.findByRefreshTokenAndEmail(token, email);
+    }
+
+    // Hàm tìm kiếm user bang Token :
+    public User fetchUserByEmail(String email) {
+        return this.userRepository.findByEmail(email);
     }
 }

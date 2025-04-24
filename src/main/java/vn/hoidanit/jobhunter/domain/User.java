@@ -46,6 +46,8 @@ public class User {
     private GenderEnum gender;
 
     private String address;
+    @Column(length = 500)
+    private String avatar; // Lưu path ảnh hoặc URL
 
     @Column(length = 4000)
     private String refreshToken;

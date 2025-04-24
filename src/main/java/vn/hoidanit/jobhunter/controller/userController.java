@@ -1,5 +1,7 @@
 package vn.hoidanit.jobhunter.controller;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.turkraft.springfilter.boot.Filter;
@@ -12,6 +14,8 @@ import vn.hoidanit.jobhunter.service.userService;
 import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
 import vn.hoidanit.jobhunter.util.error.idInvalidException;
 
+import java.io.Console;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1")
 public class userController {
@@ -88,13 +93,21 @@ public class userController {
         return this.userService.fetchUserById(id);
     }
 
-    // Update user
-    @PutMapping("/users")
-    public User updateUser(@RequestBody User user) {
-        // TODO: process PUT request
-        User currentUser = this.userService.handleUpdateUser(user);
-        return currentUser;
+    // Hàm Update
+    @PutMapping("/users/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User userRequest) {
+        // Gọi service để update (đã có handleUpdateUser trong service)
+        userRequest.setId(id); // Đảm bảo gán id từ path vào userRequest
+
+        User updatedUser = userService.handleUpdateUser(userRequest);
+        if (updatedUser == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updatedUser);
     }
+
+
+
 
     // Hàm delete
     @DeleteMapping("/users/{id}")
@@ -107,6 +120,21 @@ public class userController {
         this.userService.handleDeleteUser(id);
         return ResponseEntity.noContent().build();
     }
+
+//     Lấy token user để render ra thông tin người dùng
+@GetMapping("/users/me")
+@ApiMessage("Get current user information")
+public ResponseEntity<User> getCurrentUser(Authentication authentication) {
+    // Lấy thông tin user từ SecurityContext (đã được xác thực qua JWT token)
+    String username = authentication.getName();
+    User currentUser = this.userService.fetchUserByEmail(username);
+    if (currentUser == null) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Trả về 404 nếu không tìm thấy user
+    }
+
+    return ResponseEntity.ok(currentUser);
+}
+
 
 
 }

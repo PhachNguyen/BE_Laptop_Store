@@ -61,7 +61,7 @@ public class SecurityConfiguration {
                                         "/api/v1/auth/refresh",
                                         "/storage/**",
                                         "/api/v1/categories",
-                                        "/api/v1/products",
+//                                        "/api/v1/products",
                                         "/api/v1/products/with-images",
                                         "/api/v1/files/**"
 

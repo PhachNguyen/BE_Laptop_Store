@@ -3,12 +3,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import vn.hoidanit.jobhunter.config.dateTimeFormatConfig;
 import vn.hoidanit.jobhunter.domain.Review;
 import vn.hoidanit.jobhunter.repository.ReviewRepository;
 
 @Service
 public class ReviewService {
-
+    @Autowired
+    private  dateTimeFormatConfig dateTimeConfig;
     @Autowired
     private ReviewRepository reviewRepository;
 
@@ -17,11 +19,17 @@ public class ReviewService {
     }
 
     public Review saveReview(Review review) {
+
         return reviewRepository.save(review);
     }
 
     // (Nếu cần) Lấy review theo user
     public Page<Review> getReviewsByUser(Long userId, Pageable pageable) {
         return reviewRepository.findByUser_Id(userId, pageable);
+    }
+
+    // Đếm số lượng đánh giá theo product_id
+    public long countReviewsByProductId(Long productId) {
+        return reviewRepository.countByProductId(productId);
     }
 }

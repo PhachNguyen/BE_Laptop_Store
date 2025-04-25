@@ -10,4 +10,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     // (Nếu cần) Lấy review theo user
     Page<Review> findByUser_Id(Long userId, Pageable pageable);
+
+    // Hàm đếm số lượng Review
+    long countByProductId(Long productId);
 }

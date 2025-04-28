@@ -36,17 +36,25 @@ public class ProductService {
     // Hàm update Product
     public Product handleUpdateProduct(Product reqProduct) {
         Product currentProduct = this.productRepo.findById(reqProduct.getId()).orElse(null);
-
         if (currentProduct != null) {
             currentProduct.setName(reqProduct.getName());
             currentProduct.setDescription(reqProduct.getDescription());
             currentProduct.setPrice(reqProduct.getPrice());
             currentProduct.setStockQuantity(reqProduct.getStockQuantity());
+            currentProduct.setBrand(reqProduct.getBrand());
+            currentProduct.setWarranty(reqProduct.getWarranty());
+            currentProduct.setCpu(reqProduct.getCpu()); // mới
+            currentProduct.setRam(reqProduct.getRam()); // mới
+            currentProduct.setSsd(reqProduct.getSsd()); // mới
+            currentProduct.setCard(reqProduct.getCard()); // mới
+            currentProduct.setStatus(reqProduct.getStatus()); // mới
+            currentProduct.setImages(reqProduct.getImages());
             // Gọi save để update
             currentProduct = this.productRepo.save(currentProduct);
         }
         return currentProduct;
     }
+
     // Hàm Delete:
     public void deleteProduct(Long id) {
         productRepo.deleteById(id);
@@ -78,5 +86,19 @@ public resultPaginationDTO fetchProducts(Specification<Product> spec, Pageable p
     return res;
 }
 
+    public resultPaginationDTO fetchAllProductByBrand(String brand, Pageable pageable) {
+        Page<Product> pageProduct = this.productRepo.findByBrandIgnoreCase(brand, pageable);
+        resultPaginationDTO rs = new resultPaginationDTO();
+        meta mt = new meta();
+
+        mt.setPage(pageable.getPageNumber() + 1); // Trang bắt đầu từ 0, FE thường muốn bắt đầu từ 1
+        mt.setPageSize(pageable.getPageSize());
+        mt.setPages(pageProduct.getTotalPages());
+        mt.setTotal(pageProduct.getTotalElements());
+
+        rs.setMeta(mt);
+        rs.setResult(pageProduct.getContent());
+        return rs;
+    }
 
 }

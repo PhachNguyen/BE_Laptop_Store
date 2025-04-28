@@ -44,9 +44,7 @@ public class fileProDuctController {
             // Xử lý từng file, ví dụ lưu vào thư mục hoặc database
             try {
                 fileService.storeProDuct(productId, file);
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
@@ -143,7 +141,13 @@ public ResponseEntity<?> createProductWithImages(
             existing.setStockQuantity(updateData.getStockQuantity());
             existing.setBrand(updateData.getBrand());
             existing.setWarranty(updateData.getWarranty());
-
+// Thêm các trường đặc thù máy tính:
+            existing.setCpu(updateData.getCpu());
+            existing.setRam(updateData.getRam());
+            existing.setSsd(updateData.getSsd());
+            existing.setCard(updateData.getCard());
+            existing.setStatus(updateData.getStatus());
+// ... giữ các phần khác như cũ
             // Gán lại category nếu có
             if (updateData.getCategory() != null) {
                 Category category = categoryRepository.findById(updateData.getCategory().getId())

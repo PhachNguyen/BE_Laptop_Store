@@ -34,6 +34,11 @@ public class Product {
     private int stockQuantity;
     private String brand;
     private String warranty;
+    private String cpu;        // <-- Bổ sung
+    private Integer ram;       // <-- Bổ sung
+    private String ssd;        // <-- Bổ sung (có thể là "256GB", "512GB", "1TB")
+    private String card;        // <-- Bổ sung (card đồ họa rời/onboard)
+    private String status;     // <-- Bổ sung ("Mới", "Cũ", "Like New", ...)
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;

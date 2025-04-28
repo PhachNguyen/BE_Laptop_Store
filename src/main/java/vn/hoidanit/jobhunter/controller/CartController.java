@@ -27,28 +27,18 @@ public class CartController {
         return ResponseEntity.ok(items);
     }
 
-    // Thêm sản phẩm vào giỏ
+    // Thêm sản phẩm vào giỏ - nhận luôn quantity
     @PostMapping("/add")
     public ResponseEntity<List<CartItem>> addToCart(
             @AuthenticationPrincipal Jwt jwt,
-            @RequestBody Map<String, Long> body
+            @RequestBody Map<String, Object> body // Đổi từ Long -> Object để nhận được quantity
     ) {
         if (jwt == null) return ResponseEntity.status(401).build();
         String email = jwt.getSubject();
-        Long productId = body.get("productId");
-        List<CartItem> updatedCart = cartService.addToCart(email, productId);
-        return ResponseEntity.ok(updatedCart);
-    }
-
-    // Xoá sản phẩm khỏi giỏ
-    @DeleteMapping("/{productId}")
-    public ResponseEntity<List<CartItem>> removeFromCart(
-            @AuthenticationPrincipal Jwt jwt,
-            @PathVariable Long productId
-    ) {
-        if (jwt == null) return ResponseEntity.status(401).build();
-        String email = jwt.getSubject();
-        List<CartItem> updatedCart = cartService.removeFromCart(email, productId);
+        Long productId = Long.valueOf(body.get("productId").toString());
+        // Nhận quantity từ FE, nếu không có thì mặc định là 1
+        Integer quantity = body.get("quantity") != null ? Integer.valueOf(body.get("quantity").toString()) : 1;
+        List<CartItem> updatedCart = cartService.addToCart(email, productId, quantity);
         return ResponseEntity.ok(updatedCart);
     }
 

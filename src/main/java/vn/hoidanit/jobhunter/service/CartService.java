@@ -43,14 +43,10 @@ public class CartService {
         return cartItemRepository.findByCart(cart);
     }
 
-    public List<CartItem> addToCart(String email, Long productId) {
+    public List<CartItem> addToCart(String email, Long productId, int quantity) {
         User user = userRepository.findByEmail(email);
-
-
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
-
-
         Cart cart = cartRepository.findByUser(user).orElseGet(() -> {
             Cart newCart = new Cart();
             newCart.setUser(user);
@@ -58,18 +54,20 @@ public class CartService {
         });
 
         Optional<CartItem> existingItem = cartItemRepository.findByCart(cart).stream()
-                .filter(item -> item.getProduct().getId() == productId)
+                .filter(item -> Long.valueOf(item.getProduct().getId()).equals(productId))
+
                 .findFirst();
 
         if (existingItem.isPresent()) {
             CartItem item = existingItem.get();
-            item.setQuantity(item.getQuantity() + 1);
+//             Cộng dồn sản phẩm
+            item.setQuantity(item.getQuantity() + quantity);
             cartItemRepository.save(item);
         } else {
             CartItem item = new CartItem();
             item.setCart(cart);
             item.setProduct(product);
-            item.setQuantity(1);
+            item.setQuantity(quantity);
             cartItemRepository.save(item);
         }
 

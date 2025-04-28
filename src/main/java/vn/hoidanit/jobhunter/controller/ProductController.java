@@ -1,13 +1,17 @@
 package vn.hoidanit.jobhunter.controller;
 
 import com.turkraft.springfilter.boot.Filter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.hoidanit.jobhunter.domain.Product;
+import vn.hoidanit.jobhunter.domain.dto.meta;
 import vn.hoidanit.jobhunter.domain.dto.resultPaginationDTO;
+import vn.hoidanit.jobhunter.repository.ProductRepo;
 import vn.hoidanit.jobhunter.service.ProductService;
 
 import java.util.List;
@@ -16,6 +20,8 @@ import java.util.List;
 @RequestMapping("/api/v1")
 public class ProductController {
     private  final ProductService productService;
+
+
     public ProductController(ProductService productService) {
         this.productService = productService;
     }
@@ -58,6 +64,31 @@ public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         return ResponseEntity.notFound().build();
     }
 }
+    @GetMapping("/products/brand/{brand}")
+    public ResponseEntity<resultPaginationDTO> getProductsByBrand(
+            @PathVariable String brand,
+            @Filter Specification<Product> spec, // Filter
+            Pageable pageable
+    ) {
+        // Thêm điều kiện brand vào spec nếu chưa có
+        Specification<Product> brandSpec = (root, query, cb) -> cb.equal(root.get("brand"), brand);
+        Specification<Product> finalSpec = spec == null ? brandSpec : spec.and(brandSpec);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(productService.fetchProducts(finalSpec, pageable));
+    }
+
+//     Test API
+//    @GetMapping("/products/brand")
+//    public Page<?> getProductsByBrand(Pageable pageable) {
+//        // In ra thông tin để kiểm tra
+//        System.out.println("Page number: " + pageable.getPageNumber());
+//        System.out.println("Page size: " + pageable.getPageSize());
+//        return null; // hoặc return Page.empty();
+//    }
+
+
 
 
 

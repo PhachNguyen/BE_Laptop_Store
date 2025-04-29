@@ -1,5 +1,6 @@
 package vn.hoidanit.jobhunter.controller;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -50,4 +51,32 @@ public class CartController {
         cartService.clearCart(email);
         return ResponseEntity.ok("Cart cleared");
     }
+    // Xóa một sản phẩm khỏi giỏ hàng
+    @DeleteMapping("/{productId}")
+    @Transactional
+    public ResponseEntity<List<CartItem>> removeFromCart(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable Long productId
+    ) {
+        if (jwt == null) return ResponseEntity.status(401).build();
+        String email = jwt.getSubject();
+        List<CartItem> updatedCart = cartService.removeFromCart(email, productId);
+        return ResponseEntity.ok(updatedCart);
+    }
+// Update
+// Cập nhật số lượng sản phẩm trong giỏ hàng
+    @PutMapping("/update")
+    public ResponseEntity<List<CartItem>> updateQuantity(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestBody Map<String, Object> body
+    ) {
+        if (jwt == null) return ResponseEntity.status(401).build();
+        String email = jwt.getSubject();
+        Long productId = ((Number)body.get("productId")).longValue();
+        Integer quantity = ((Number)body.get("quantity")).intValue();
+
+        List<CartItem> updatedCart = cartService.updateQuantity(email, productId, quantity);
+        return ResponseEntity.ok(updatedCart);
+}
+
 }

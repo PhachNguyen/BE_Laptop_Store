@@ -96,4 +96,28 @@ public class CartService {
 
         cartItemRepository.deleteAll(cart.getItems());
     }
+    // Hàm update quantity cartItem
+    public List<CartItem> updateQuantity(String email, Long productId, int quantity) {
+        User user = userRepository.findByEmail(email); // Lấy email
+
+        Cart cart = cartRepository.findByUser(user)  // tìm giỏ hàng theo user
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy giỏ hàng này"));
+
+        Product product = productRepository.findById(productId) // Tìm theo sản phẩm
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        CartItem item = cartItemRepository.findByCart(cart).stream() // Chuyển List thành kiểu Stream
+//        Lọc ra những CartItem mà productId của sản phẩm bên trong đúng bằng productId được truyền vào.
+                .filter(ci -> ci.getProduct().getId()==productId)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("CartItem not found"));
+//        Lấy ra đối tượng CartItem thuộc giỏ hàng này, có Product id đúng bằng productId truyền vào.
+//        Nếu không tìm thấy, báo lỗi. Nếu tìm thấy thì trả về CartItem này để tiếp tục update quantity.
+
+            item.setQuantity(quantity);
+            cartItemRepository.save(item);
+
+        return cartItemRepository.findByCart(cart);
+    }
+
 }

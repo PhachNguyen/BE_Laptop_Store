@@ -19,21 +19,22 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "Orders")
-public class Order {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    public class Order {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    @ManyToOne
-    private User user; // lưu lại user mua hàng
+        @ManyToOne
+        private User user; // lưu lại user mua hàng
 
-    private String customerName;
-    private String customerAddress;
-    private String customerPhone;
-    private String customerEmail;
-    private String shippingMethod;
-    private Long shippingFee;
-    private Long totalAmount;
+        private String customerName;
+        private String customerAddress;
+        private String customerPhone;
+        private String customerEmail;
+        private String paymentMethod;
+        private String shippingMethod;
+        private Long shippingFee;
+        private Long totalAmount;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus; // đã tạo enum trước đó

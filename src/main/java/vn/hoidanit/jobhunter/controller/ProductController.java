@@ -64,20 +64,40 @@ public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         return ResponseEntity.notFound().build();
     }
 }
-    @GetMapping("/products/brand/{brand}")
-    public ResponseEntity<resultPaginationDTO> getProductsByBrand(
-            @PathVariable String brand,
-            @Filter Specification<Product> spec, // Filter
-            Pageable pageable
-    ) {
-        // Thêm điều kiện brand vào spec nếu chưa có
-        Specification<Product> brandSpec = (root, query, cb) -> cb.equal(root.get("brand"), brand);
-        Specification<Product> finalSpec = spec == null ? brandSpec : spec.and(brandSpec);
+//    @GetMapping("/products/brand/{brand}")
+//    public ResponseEntity<resultPaginationDTO> getProductsByBrand(
+//            @PathVariable String brand,
+//            @Filter Specification<Product> spec, // Filter
+//            Pageable pageable
+//    ) {
+//        // Thêm điều kiện brand vào spec nếu chưa có
+//        Specification<Product> brandSpec = (root, query, cb) -> cb.equal(root.get("brand"), brand);
+//        Specification<Product> finalSpec = spec == null ? brandSpec : spec.and(brandSpec);
+//
+//        return ResponseEntity
+//                .status(HttpStatus.OK)
+//                .body(productService.fetchProducts(finalSpec, pageable));
+//    }
+@GetMapping("/products/brand/{brand}")
+public ResponseEntity<?> getProductsByBrand(
+        @PathVariable String brand,
+        @RequestParam(required = false) String cpu,
+        @RequestParam(required = false) Integer ram,
+        Pageable pageable
+) {
+    Specification<Product> spec = Specification.where((root, query, cb) -> cb.equal(root.get("brand"), brand));
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(productService.fetchProducts(finalSpec, pageable));
+    if (cpu != null) {
+        spec = spec.and((root, query, cb) -> cb.equal(root.get("cpu"), cpu));
     }
+
+    if (ram != null) {
+        spec = spec.and((root, query, cb) -> cb.equal(root.get("ram"), ram));
+    }
+
+    return ResponseEntity.ok(productService.fetchProducts(spec, pageable));
+}
+
 
 //     Test API
 //    @GetMapping("/products/brand")

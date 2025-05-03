@@ -1,4 +1,5 @@
 package vn.hoidanit.jobhunter.service;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,8 +10,10 @@ import vn.hoidanit.jobhunter.repository.ReviewRepository;
 
 @Service
 public class ReviewService {
+
     @Autowired
-    private  dateTimeFormatConfig dateTimeConfig;
+    private dateTimeFormatConfig dateTimeConfig;
+
     @Autowired
     private ReviewRepository reviewRepository;
 
@@ -18,18 +21,22 @@ public class ReviewService {
         return reviewRepository.findByProduct_Id(productId, pageable);
     }
 
-    public Review saveReview(Review review) {
+    public Page<Review> getAllReviews(Pageable pageable) {
+        return reviewRepository.findAll(pageable); // dùng findAll có sẵn!
+    }
 
+    public Review saveReview(Review review) {
         return reviewRepository.save(review);
     }
 
-    // (Nếu cần) Lấy review theo user
     public Page<Review> getReviewsByUser(Long userId, Pageable pageable) {
         return reviewRepository.findByUser_Id(userId, pageable);
     }
 
-    // Đếm số lượng đánh giá theo product_id
     public long countReviewsByProductId(Long productId) {
         return reviewRepository.countByProductId(productId);
+    }
+    public void deleteReviewById(Long id) {
+        reviewRepository.deleteById(id);
     }
 }

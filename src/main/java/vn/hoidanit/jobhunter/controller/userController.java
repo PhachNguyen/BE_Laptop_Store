@@ -90,6 +90,7 @@ public class userController {
     // PathVariable: check thông tin user
     @GetMapping("/users/{id}")
     public User userById(@PathVariable("id") long id) {
+
         return this.userService.fetchUserById(id);
     }
 

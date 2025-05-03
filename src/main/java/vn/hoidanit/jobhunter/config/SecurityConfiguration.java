@@ -54,22 +54,25 @@ public class SecurityConfiguration {
                                                  // để FE React gọi API
                 .authorizeHttpRequests(
                         authz -> authz
-//                                .requestMatchers("/", "/login",
-//                                        "/api/v1/login",
-//                                        "/api/v1/auth/login",
-//                                        "/api/v1/auth/register", // Đăng ký
-//                                        "/api/v1/auth/refresh",
-//                                        "/storage/**",
-//                                        "/api/v1/categories",
-////                                        "/api/v1/products",
-//                                        "/api/v1/products/with-images",
-//                                        "/api/v1/files/**"
-//
-//                                )
-//                                .permitAll()
-//
-//                                .anyRequest().authenticated()
-                 .anyRequest().permitAll()
+                                .requestMatchers("/", "/login",
+                                        "/api/v1/login",
+                                        "/api/v1/create",
+                                        "/api/v1/auth/login",
+                                        "/api/v1/auth/register", // Đăng ký
+                                        "/api/v1/auth/refresh",
+                                        "/storage/**",
+                                        "/api/v1/img",
+                                        "/api/v1/products/reviews/**",
+                                        "/api/v1/categories/**",
+                                        "/api/v1/products",
+                                        "/api/v1/products/with-images",
+                                        "/api/v1/files/**"
+
+                                )
+                                .permitAll()
+
+                                .anyRequest().authenticated()
+//                 .anyRequest().permitAll()
                 )
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()) // Bật xác thực JWT
                         .authenticationEntryPoint(customAuthenticationEntrypoint))

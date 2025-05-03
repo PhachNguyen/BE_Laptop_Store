@@ -52,15 +52,16 @@ public class OrderService {
         }
     }
 
-    public void updatePaymentStatus(Long orderId, boolean success) {
+    public Order updatePaymentStatus(Long orderId, boolean success) {
         Order order = getOrderById(orderId);
         if (success) {
             order.setPaymentStatus(PaymentStatus.SUCCESS);
         } else {
             order.setPaymentStatus(PaymentStatus.FAILED);
         }
-        orderRepository.save(order);
+        return orderRepository.save(order);
     }
+
 
     @Transactional
     public String createOrderFromCart(String email, OrderRequest request) throws UnsupportedEncodingException {
@@ -79,6 +80,8 @@ public class OrderService {
         order.setShippingMethod(request.getShippingMethod());
         order.setShippingFee(request.getShippingFee());
         order.setPaymentStatus(PaymentStatus.PENDING);
+        order.setPaymentMethod(request.getPaymentMethod());
+
         order.setOrderDate(LocalDateTime.now());
 
         BigDecimal totalAmount = BigDecimal.valueOf(request.getShippingFee()); // sửa thành BigDecimal
@@ -107,6 +110,12 @@ public class OrderService {
 
       // Trả về URL thanh toán
 //       return paymentService.createPaymentUrl(order);
-       return paymentService.buildPaymentUrl("141",totalAmount,"192.168.1.8");
-  }
+//       return paymentService.buildPaymentUrl("141",totalAmount,"192.168.1.8");
+        if ("vnpay".equalsIgnoreCase(request.getPaymentMethod())) {
+            return paymentService.buildPaymentUrl(order.getId().toString(), totalAmount, "192.168.1.8");
+        } else {
+            return "COD_SUCCESS";
+        }
+
+    }
 }

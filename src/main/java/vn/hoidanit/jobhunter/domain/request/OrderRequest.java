@@ -9,5 +9,6 @@ public class OrderRequest {
     private String customerEmail;
     private String customerAddress;
     private String shippingMethod;
+    private String paymentMethod; // "cod" hoặc "vnpay"
     private Long shippingFee;
 }

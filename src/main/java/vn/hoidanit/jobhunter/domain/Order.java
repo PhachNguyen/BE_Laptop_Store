@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import vn.hoidanit.jobhunter.util.constant.PaymentStatus;
+import vn.hoidanit.jobhunter.util.constant.ShippingStatus;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -38,6 +39,8 @@ import java.util.List;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus; // đã tạo enum trước đó
+    @Enumerated(EnumType.STRING)
+    private ShippingStatus shippingStatus = ShippingStatus.PACKING; // mặc định
 
     private LocalDateTime orderDate;
 

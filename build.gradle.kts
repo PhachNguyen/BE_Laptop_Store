@@ -31,6 +31,8 @@ dependencies {
 	testImplementation("org.springframework.security:spring-security-test")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 	runtimeOnly("com.oracle.database.jdbc:ojdbc8")
+//	implementation("com.github.librepdf:openpdf:1.3.30") // Bỏ k thêm thư viện pdf nữa
+
 }
 
 tasks.withType<Test> {

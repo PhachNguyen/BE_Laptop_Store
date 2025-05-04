@@ -1,6 +1,9 @@
 package vn.hoidanit.jobhunter.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.hoidanit.jobhunter.domain.*;
@@ -13,6 +16,7 @@ import vn.hoidanit.jobhunter.util.constant.PaymentStatus;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +37,44 @@ public class OrderService {
     public Order getOrderById(Long id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng id = " + id));
+    }
+    // Tìm đơn hàng theo user
+    public Page<Order> getOrdersByUser(String email, int page, int size, String status,
+                                       LocalDate fromDate, LocalDate toDate) {
+        User user = userRepository.findByEmail(email);
+        Pageable pageable = PageRequest.of(page, size);
+
+        // Nếu không lọc thời gian
+        if (fromDate == null && toDate == null) {
+            if ("all".equalsIgnoreCase(status)) {
+                return orderRepository.findByUser(user, pageable);
+            } else {
+                PaymentStatus paymentStatus = PaymentStatus.valueOf(status.toUpperCase());
+                return orderRepository.findByUserAndPaymentStatus(user, paymentStatus, pageable);
+            }
+        }
+
+        // Nếu có lọc thời gian
+        LocalDateTime start = fromDate != null ? fromDate.atStartOfDay() : LocalDate.MIN.atStartOfDay();
+        LocalDateTime end = toDate != null ? toDate.plusDays(1).atStartOfDay() : LocalDate.MAX.atStartOfDay();
+
+        if ("all".equalsIgnoreCase(status)) {
+            return orderRepository.findByUserAndOrderDateBetween(user, start, end, pageable);
+        } else {
+            PaymentStatus paymentStatus = PaymentStatus.valueOf(status.toUpperCase());
+            return orderRepository.findByUserAndPaymentStatusAndOrderDateBetween(user, paymentStatus, start, end, pageable);
+        }
+    }
+
+
+    // Tìm đơn theo ID nhưng kiểm tra quyền sở hữu (chỉ chủ đơn hàng mới được xem)
+    public Order getOrderByIdForUser(Long id, String email) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng id = " + id));
+        if (!order.getUser().getEmail().equals(email)) {
+            throw new RuntimeException("Bạn không có quyền xem đơn hàng này.");
+        }
+        return order;
     }
 
     public List<Order> getOrdersByStatus(PaymentStatus status) {

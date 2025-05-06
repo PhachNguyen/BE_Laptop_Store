@@ -11,7 +11,7 @@ public class HelloController {
     // // Thêm CORS để không xung đột port, default config
     // @CrossOrigin
     public String getHelloWorld() {
-        return "Update Hello World (Hỏi Dân IT & Eric)";
+        return "Update Hello World ";
     }
 
 

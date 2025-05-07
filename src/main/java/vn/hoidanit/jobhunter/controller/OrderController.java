@@ -2,7 +2,10 @@ package vn.hoidanit.jobhunter.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -19,6 +22,7 @@ import vn.hoidanit.jobhunter.util.constant.PaymentStatus;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/orders")
@@ -27,11 +31,22 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @GetMapping
-    public ResponseEntity<List<Order>> getAllOrders() {
-        return ResponseEntity.ok(orderService.getAllOrders());
-    }
+//    @GetMapping
+//    public ResponseEntity<List<Order>> getAllOrders() {
+//        return ResponseEntity.ok(orderService.getAllOrders());
+//    }
 
+//     Fetch all Order
+    @GetMapping
+    public ResponseEntity<Page<OrderDTO>> getOrdersWithPagination(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<OrderDTO> ordersPage = orderService.getOrdersWithPagination(pageable);
+        return ResponseEntity.ok(ordersPage);
+    }
+//     Fetch order của user theo jwt
     @GetMapping("/my")
     public ResponseEntity<?> getMyOrders(
             @AuthenticationPrincipal Jwt jwt,
@@ -69,6 +84,28 @@ public class OrderController {
         orderService.cancelOrder(id);
         return ResponseEntity.ok("Đơn hàng đã được huỷ thành công!");
     }
+// Hàm update status
+@PutMapping("/{id}/status")
+public ResponseEntity<OrderDTO> updateOrderStatus(@PathVariable Long id, @RequestBody Map<String, String> status) {
+    // Lấy giá trị "status" từ JSON body
+    String statusValue = status.get("status");  // status là key trong JSON
+
+    try {
+        // Truyền trạng thái dưới dạng String và nhận OrderDTO đã cập nhật
+        OrderDTO updatedOrderDTO = orderService.updateOrderStatus(id, statusValue);
+        return ResponseEntity.ok(updatedOrderDTO);
+    } catch (IllegalArgumentException e) {
+        // Nếu đơn hàng không tồn tại hoặc lỗi xử lý
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    } catch (Exception e) {
+        e.printStackTrace();
+        // Hoặc log theo cách khác, ví dụ:
+    //    log.error("Đã xảy ra lỗi: ", e);
+        // Xử lý lỗi khác nếu có
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    }
+}
+
 
     @PostMapping("/create-payment")
     public ResponseEntity<PaymentUrlResponse> createPayment(

@@ -1,6 +1,7 @@
 package vn.hoidanit.jobhunter.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import vn.hoidanit.jobhunter.repository.OrderRepository;
 
 import vn.hoidanit.jobhunter.repository.userRepository;
 import vn.hoidanit.jobhunter.util.constant.PaymentStatus;
+import vn.hoidanit.jobhunter.util.constant.ShippingStatus;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -31,6 +33,8 @@ public class OrderService {
     private final CartRepository cartRepository;
     private final userRepository userRepository;
     private final PaymentService paymentService;
+//     Không cần vì dto k phải là một spring bean
+//    private  final  OrderDTO orderDTO;
 
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
@@ -208,6 +212,29 @@ public OrderDTO convertToDTO(Order order) {
     dto.setItems(itemDTOs);
     return dto;
 }
+// Hàm update
+public OrderDTO updateOrderStatus(Long id, String status) {
+    Order order = orderRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Đơn hàng không tồn tại"));
 
+    try {
+        // Cập nhật trạng thái đơn hàng bằng cách sử dụng ShippingStatus enum
+        order.setShippingStatus(ShippingStatus.valueOf(status));  // Nếu status không hợp lệ, sẽ ném lỗi IllegalArgumentException
+    } catch (IllegalArgumentException e) {
+        throw new IllegalArgumentException("Trạng thái không hợp lệ");
+    }
+
+    // Lưu lại đơn hàng đã được cập nhật
+    Order updatedOrder = orderRepository.save(order);
+
+    // Trả về OrderDTO đã được cập nhật
+    return convertToDTO(updatedOrder);
+}
+
+// Hàm render ra all order
+public Page<OrderDTO> getOrdersWithPagination(Pageable pageable) {
+    Page<Order> ordersPage = orderRepository.findAll(pageable);
+    return ordersPage.map(this::convertToDTO); // Chuyển đổi sang OrderDTO
+}
 
 }

@@ -65,9 +65,14 @@ public class User {
     // @JsonIgnore
     // List<Resume> resumes;
 
-     @ManyToOne
-     @JoinColumn(name = "role_id")
-     private Role role;
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
+
+    // Example role check method
+    public boolean canViewDashboard() {
+        return this.role != null && this.role.canViewDashboard();
+    }
 
     // Set Create
     @PrePersist

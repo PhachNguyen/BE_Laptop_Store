@@ -18,7 +18,8 @@ public class Review {
     private int rating;         // Số sao
     private String review;     // Nội dung
     private Instant createdAt;
-
+    @Column(name = "admin_reply")
+    private String adminReply; // Câu trả lời của admin
     @ManyToOne
     private User user;
 

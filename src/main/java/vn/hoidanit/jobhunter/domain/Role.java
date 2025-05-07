@@ -19,8 +19,9 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-import vn.hoidanit.jobhunter.util.SecurityUtil;
 
+
+import vn.hoidanit.jobhunter.util.SecurityUtil;
 @Entity
 @Table(name = "roles")
 @Getter
@@ -40,30 +41,20 @@ public class Role {
     private String createdBy;
     private String updatedBy;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "roles" })
-    @JoinTable(name = "permission_role", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
-    private List<Permission> permissions;
-
     @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
     @JsonIgnore
     List<User> users;
 
-    @PrePersist
-    public void handleBeforeCreate() {
-        this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
-                ? SecurityUtil.getCurrentUserLogin().get()
-                : "";
-
-        this.createdAt = Instant.now();
+    // Thêm phương thức phân quyền cho từng role
+    public boolean canViewDashboard() {
+        return this.name.equals("ADMIN") || this.name.equals("MANAGER");
     }
 
-    @PreUpdate
-    public void handleBeforeUpdate() {
-        this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
-                ? SecurityUtil.getCurrentUserLogin().get()
-                : "";
+    public boolean canDelete() {
+        return this.name.equals("ADMIN");
+    }
 
-        this.updatedAt = Instant.now();
+    public boolean canEdit() {
+        return this.name.equals("ADMIN") || this.name.equals("MANAGER");
     }
 }

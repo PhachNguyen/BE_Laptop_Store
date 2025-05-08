@@ -8,9 +8,12 @@ import lombok.Setter;
 // Hàm resLoginDTO định dạng dữ liệu khi user login success
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ResLoginDTO {
     private String accessToken;
     private UserLogin user;
+
 
     @Getter
     @Setter
@@ -21,6 +24,7 @@ public class ResLoginDTO {
         private long id;
         private String email;
         private String name;
+//        private String role; // Thêm trường role
     }
 
 }

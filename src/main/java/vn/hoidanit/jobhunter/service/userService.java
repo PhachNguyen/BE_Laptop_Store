@@ -26,7 +26,9 @@ public class userService {
     public User handleCreateUser(User user) {
         return this.userRepository.save(user);
     }
-
+public User findUserByEmail(String email) {
+        return this.userRepository.findByEmail(email);
+}
     // Hàm xem All Users
     public List<User> getAll(Pageable pageable) {
         Page<User> pageUser = this.userRepository.findAll(pageable);

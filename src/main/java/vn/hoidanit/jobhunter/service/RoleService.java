@@ -45,6 +45,24 @@ public class RoleService {
     public void delete(long id) {
         roleRepository.deleteById(id);
     }
+    // Lấy role theo tên
+
+    public Role getRoleByName(String roleName) {
+        // Kiểm tra xem role đã tồn tại trong cơ sở dữ liệu hay chưa
+        Role role = roleRepository.findByName(roleName).orElse(null);
+
+        if (role == null) {
+            // Nếu chưa tồn tại, tạo mới và lưu vào cơ sở dữ liệu
+            role = new Role();
+            role.setName(roleName);
+            role.setDescription("Mô tả cho role " + roleName);
+            role.setActive(true);  // Gán role này là hoạt động
+            roleRepository.save(role);  // Lưu vào cơ sở dữ liệu
+        }
+
+        return role;
+    }
+
 
     // Lấy role theo id
     public Role fetchById(long id) {

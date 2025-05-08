@@ -26,7 +26,7 @@ import vn.hoidanit.jobhunter.domain.dto.ResLoginDTO;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-// Lấy tham số môi trường 
+// Lấy tham số môi trường
 @Service
 public class SecurityUtil {
     private final JwtEncoder jwtEncoder;
@@ -68,14 +68,14 @@ public class SecurityUtil {
     // Hàm tạo Refesh Token
     public String createRefreshToken(String email, ResLoginDTO dto) { // Hàm tạo token
         Instant now = Instant.now();
-        //  Tính toán thời gian exprired của một token 
+        //  Tính toán thời gian exprired của một token
         Instant validity = now.plus(this.refreshTokenExpriration, ChronoUnit.SECONDS);
  // @formatter:off
         JwtClaimsSet claims = JwtClaimsSet.builder() // Xấy dựng các khai báo cho JWT
-        .issuedAt(now) // Thời điểm phát hành token là thời điểm hiện tại 
+        .issuedAt(now) // Thời điểm phát hành token là thời điểm hiện tại
         .expiresAt(validity)
         .subject(email) // Chủ thể của token là tên đăng nhập của user
-        .claim("user", dto.getUser()) // 
+        .claim("user", dto.getUser()) //
         .build();
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
         return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader,

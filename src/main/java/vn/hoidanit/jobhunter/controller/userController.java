@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.turkraft.springfilter.boot.Filter;
 
 import jakarta.validation.Valid;
+import vn.hoidanit.jobhunter.domain.Role;
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.dto.resultPaginationDTO;
+import vn.hoidanit.jobhunter.service.RoleService;
 import vn.hoidanit.jobhunter.service.userService;
 
 import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
@@ -17,6 +19,7 @@ import vn.hoidanit.jobhunter.util.error.idInvalidException;
 import java.io.Console;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
@@ -42,10 +45,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 public class userController {
     private final userService userService;
     private final PasswordEncoder passwordEncoder;
+    private  final RoleService roleService;
 
-    public userController(userService userService, PasswordEncoder passwordEncoder) {
+    public userController(userService userService, PasswordEncoder passwordEncoder, RoleService roleService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.roleService = roleService;
+
     }
 
     // @ResponseEntity : Trả về phản hồi cho người dùng
@@ -60,20 +66,74 @@ public class userController {
     // return "create user";
     // }
 
-    @PostMapping("/create")
-    @ApiMessage("Create a new user ")
-    public ResponseEntity<User> createUser(@Valid @RequestBody User postManUser) throws idInvalidException {
-        // TODO: process POST request
-        // Mã hóa mk khi truyền vào database.
-        boolean isEmailExist = this.userService.isEmailExist(postManUser.getEmail());
-        if (isEmailExist) {
-            throw new idInvalidException(
-                    "Email: " + postManUser.getEmail() + " đã tồn tại vui lòng sử dụng email khác");
+// Tạo tk USER
+    @PostMapping("/createUser")
+    public ResponseEntity<User> createUser(@RequestBody User postManUser) {
+        // Kiểm tra email đã tồn tại chưa
+        if (userService.isEmailExist(postManUser.getEmail())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
+
+        // Mã hóa mật khẩu người dùng
         postManUser.setPassword(passwordEncoder.encode(postManUser.getPassword()));
-        this.userService.handleCreateUser(postManUser);
-        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+        // Lấy role mặc định "USER"
+
+        Role defaultRole = roleService.getRoleByName("USER");
+        // Gán role cho người dùng mới
+        postManUser.setRole(defaultRole);
+        // Lưu người dùng vào database
+        userService.handleCreateUser(postManUser);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(postManUser);
     }
+//    / Tạo tk Manage
+    @PostMapping("/createManage")
+    public ResponseEntity<User> createManage(@RequestBody User postManUser) {
+        // Kiểm tra email đã tồn tại chưa
+        if (userService.isEmailExist(postManUser.getEmail())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        // Mã hóa mật khẩu người dùng
+        postManUser.setPassword(passwordEncoder.encode(postManUser.getPassword()));
+        // Lấy role mặc định "USER"
+
+        Role defaultRole = roleService.getRoleByName("MANAGE");
+        // Gán role cho người dùng mới
+        postManUser.setRole(defaultRole);
+        // Lưu người dùng vào database
+        userService.handleCreateUser(postManUser);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(postManUser);
+    }
+    @GetMapping("/{email}")
+    public User getUserByEmail(@PathVariable String email) {
+        User user = userService.findUserByEmail(email);  // Lấy thông tin người dùng từ service
+        if (user == null) {
+            throw new RuntimeException("User not found");  // Nếu không tìm thấy người dùng, trả về lỗi
+        }
+        return user;
+    }
+// Tạo tk Admin
+@PostMapping("/createAdmin")
+public ResponseEntity<User> createAdminUser(@RequestBody User postManUser) {
+    // Kiểm tra email đã tồn tại chưa
+    if (userService.isEmailExist(postManUser.getEmail())) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    }
+
+    // Mã hóa mật khẩu người dùng
+    postManUser.setPassword(passwordEncoder.encode(postManUser.getPassword()));
+
+    // Gán role ADMIN cho người dùng này
+    Role adminRole = roleService.getRoleByName("ADMIN");
+    postManUser.setRole(adminRole); // Gán role ADMIN
+
+    // Lưu người dùng vào database
+    userService.handleCreateUser(postManUser);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(postManUser);
+}
 
     // Hàm show users
     @GetMapping("/users")
@@ -134,6 +194,24 @@ public ResponseEntity<User> getCurrentUser(Authentication authentication) {
     }
 
     return ResponseEntity.ok(currentUser);
+}
+// Update role
+@PutMapping("/users/{id}/role")
+public ResponseEntity<User> updateUserRole(@PathVariable long id, @RequestBody Map<String, String> roleData) {
+    String newRoleName = roleData.get("role");
+    User user = userService.fetchUserById(id);
+    if (user == null) {
+        return ResponseEntity.notFound().build();
+    }
+    // Lấy role từ cơ sở dữ liệu
+    Role newRole = roleService.getRoleByName(newRoleName);
+    if (newRole != null) {
+        user.setRole(newRole);
+        userService.handleCreateUser(user);
+        return ResponseEntity.ok(user);
+    } else {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // Nếu role không hợp lệ
+    }
 }
 
 

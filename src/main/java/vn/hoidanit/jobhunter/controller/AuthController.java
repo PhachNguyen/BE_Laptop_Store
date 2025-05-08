@@ -91,7 +91,7 @@ public class AuthController {
         String email = SecurityUtil.getCurrentUserLogin().isPresent() ?
                 SecurityUtil.getCurrentUserLogin().get() : "";
         User currentUser = this.userService.handlerGetUserbyUserName(email);
-        ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin();
+        ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin(currentUser.getId(), currentUser.getEmail(), currentUser.getName());
         if (currentUser != null) {
             userLogin.setId(currentUser.getId());
             userLogin.setEmail(currentUser.getEmail());

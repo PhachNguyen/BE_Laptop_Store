@@ -77,26 +77,40 @@ public ResponseEntity<Product> getProductById(@PathVariable Long id) {
 //        return ResponseEntity
 //                .status(HttpStatus.OK)
 //                .body(productService.fetchProducts(finalSpec, pageable));
-//    }
 @GetMapping("/products/brand/{brand}")
 public ResponseEntity<?> getProductsByBrand(
         @PathVariable String brand,
         @RequestParam(required = false) String cpu,
         @RequestParam(required = false) Integer ram,
-        Pageable pageable
-) {
+        @RequestParam(required = false) Integer price,
+        @RequestParam(required = false) String status,
+        Pageable pageable) {
+
     Specification<Product> spec = Specification.where((root, query, cb) -> cb.equal(root.get("brand"), brand));
 
+    // Filter by CPU
     if (cpu != null) {
         spec = spec.and((root, query, cb) -> cb.equal(root.get("cpu"), cpu));
     }
 
+    // Filter by RAM
     if (ram != null) {
         spec = spec.and((root, query, cb) -> cb.equal(root.get("ram"), ram));
     }
 
+    // Filter by Price
+    if (price != null) {
+        spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("price"), price));
+    }
+
+    // Filter by Status
+    if (status != null) {
+        spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), status));
+    }
+
     return ResponseEntity.ok(productService.fetchProducts(spec, pageable));
 }
+
 
 
 //     Test API

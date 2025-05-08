@@ -5,8 +5,10 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 import vn.hoidanit.jobhunter.domain.Role;
 
+import java.util.Optional;
+
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long>, JpaSpecificationExecutor<Role> {
-
+    Optional<Role> findByName(String name);  // Trả về Optional<Role> vì có thể không tìm thấy role
     boolean existsByName(String name);
 }

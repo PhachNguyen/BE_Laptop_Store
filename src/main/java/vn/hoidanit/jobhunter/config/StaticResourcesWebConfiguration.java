@@ -25,7 +25,8 @@ public class StaticResourcesWebConfiguration implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/storage/**")
-                .allowedOrigins("http://localhost:5173")
+//                .allowedOrigins("http://localhost:5173")
+                .allowedOrigins("*") // Cho phép mọi client (mobile, browser)
                 .allowedMethods("GET")
                 .allowedHeaders("*")
                 .allowCredentials(false);  // true nếu bạn dùng cookie

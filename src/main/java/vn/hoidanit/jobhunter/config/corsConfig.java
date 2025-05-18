@@ -14,7 +14,13 @@ public class corsConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000","http://localhost:5173")); // Cho phép đường link này truy
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3000",
+                "http://localhost:5173",
+//                 Connect tới Mobile
+                "http://192.168.1.5:19006",    // nếu bạn chạy app bằng lệnh `expo start`
+                "exp://192.168.1.5:19000"      // nếu bạn dùng Expo Go trên điện thoại
+                )); // Cho phép đường link này truy
                                                                                  // cập vào
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE",
                 "OPTIONS")); // Allowed methods

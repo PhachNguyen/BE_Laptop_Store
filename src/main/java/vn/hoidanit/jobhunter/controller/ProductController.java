@@ -3,6 +3,7 @@ package vn.hoidanit.jobhunter.controller;
 import com.turkraft.springfilter.boot.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import vn.hoidanit.jobhunter.repository.ProductRepo;
 import vn.hoidanit.jobhunter.service.ProductService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -25,14 +27,41 @@ public class ProductController {
     public ProductController(ProductService productService) {
         this.productService = productService;
     }
-    @GetMapping("/products")
-    public ResponseEntity<resultPaginationDTO> getAllProducts(
-            @Filter Specification<Product> spec,
-            Pageable pageable
-            ) {
-        return  ResponseEntity.status(HttpStatus.OK).body(this.productService.fetchProducts(spec,pageable));
+//    @GetMapping("/products")
+//    public ResponseEntity<resultPaginationDTO> getAllProducts(
+//            @Filter Specification<Product> spec,
+//            Pageable pageable
+//            ) {
+//        return  ResponseEntity.status(HttpStatus.OK).body(this.productService.fetchProducts(spec,pageable));
+//
+//    }
+@GetMapping("/products")
+public ResponseEntity<?> getProducts(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+) {
+    Pageable pageable = PageRequest.of(page, size);
+    Page<Product> productPage = productService.getAllProducts(pageable);
 
-    }
+    Map<String, Object> meta = Map.of(
+            "page", productPage.getNumber(),
+            "pageSize", productPage.getSize(),
+            "pages", productPage.getTotalPages(),
+            "total", productPage.getTotalElements()
+    );
+
+    Map<String, Object> data = Map.of(
+            "result", productPage.getContent(),
+            "meta", meta
+    );
+
+    return ResponseEntity.ok(Map.of(
+            "statusCode", 200,
+            "message", "GET API SUCCESS",
+            "data", data
+    ));
+}
+
     @PostMapping("/products")
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
         Product created = productService.createProduct(product);

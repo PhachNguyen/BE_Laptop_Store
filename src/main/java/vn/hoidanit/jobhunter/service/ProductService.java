@@ -14,6 +14,7 @@ import vn.hoidanit.jobhunter.repository.ProductRepo;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -28,6 +29,22 @@ public class ProductService {
     public Product createProduct(Product product) {
         return productRepo.save(product);
     }
+//     Mobile fetch all product
+public Page<Product> getAllProducts(Pageable pageable) {
+    Page<Product> productPage = productRepo.findAll(pageable);
+
+    String baseUrl = "http://192.168.1.3:8080/storage/";
+
+    productPage.getContent().forEach(product -> {
+        List<String> fullUrls = product.getImages().stream()
+                .map(fileName -> baseUrl + "product-" + product.getId() + "/" + fileName)
+                .collect(Collectors.toList());
+        product.setImages(fullUrls);
+    });
+
+    return productPage;
+}
+
     // Tìm kiếm sản phẩm theo id
     public Product getProductById(Long id) {
         Product currentProduct = productRepo.findById(id).get();

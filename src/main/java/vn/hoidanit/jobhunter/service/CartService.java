@@ -29,6 +29,16 @@ public class CartService {
 
     @Autowired
     private ProductRepo productRepository;
+    public CartService(CartRepository cartRepository,
+                       CartItemRepository cartItemRepository,
+                       userRepository userRepository,
+                       ProductRepo productRepository) {
+        this.cartRepository = cartRepository;
+        this.cartItemRepository = cartItemRepository;
+        this.userRepository = userRepository;
+        this.productRepository = productRepository;
+    }
+
 
     public List<CartItem> getUserCartItems(String email) {
         User user = userRepository.findByEmail(email);

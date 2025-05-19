@@ -38,7 +38,7 @@ public User findUserByEmail(String email) {
 
     // Hàm fetch by ID
     public User fetchUserById(long id) {
-        return this.userRepository.findById(id);
+        return this.userRepository.findById(id).orElse(null);
     }
 
     // Hàm update User

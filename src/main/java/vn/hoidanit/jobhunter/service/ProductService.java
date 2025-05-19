@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import vn.hoidanit.jobhunter.domain.Product;
 import vn.hoidanit.jobhunter.domain.dto.meta;
 import vn.hoidanit.jobhunter.domain.dto.resultPaginationDTO;
+import vn.hoidanit.jobhunter.domain.response.ProductResponse;
 import vn.hoidanit.jobhunter.repository.ProductRepo;
 
 import java.util.List;
@@ -46,10 +47,24 @@ public Page<Product> getAllProducts(Pageable pageable) {
 }
 
     // Tìm kiếm sản phẩm theo id
-    public Product getProductById(Long id) {
-        Product currentProduct = productRepo.findById(id).get();
-        return currentProduct;
+    public ProductResponse getProductResponseById(Long id) {
+        Product product = productRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Not found"));
+
+        String baseUrl = "http://192.168.1.3:8080/storage/product-" + product.getId() + "/";
+        List<String> fullImageUrls = product.getImages().stream()
+                .map(fileName -> baseUrl + fileName)
+                .collect(Collectors.toList());
+
+        ProductResponse res = new ProductResponse();
+        res.setId(product.getId());
+        res.setName(product.getName());
+        res.setDescription(product.getDescription());
+        res.setPrice(product.getPrice());
+        res.setImages(fullImageUrls);
+        return res;
     }
+
     // Hàm update Product
     public Product handleUpdateProduct(Product reqProduct) {
         Product currentProduct = this.productRepo.findById(reqProduct.getId()).orElse(null);

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import vn.hoidanit.jobhunter.domain.Product;
 import vn.hoidanit.jobhunter.domain.dto.meta;
 import vn.hoidanit.jobhunter.domain.dto.resultPaginationDTO;
+import vn.hoidanit.jobhunter.domain.response.ProductResponse;
 import vn.hoidanit.jobhunter.repository.ProductRepo;
 import vn.hoidanit.jobhunter.service.ProductService;
 
@@ -84,15 +85,12 @@ public ResponseEntity<?> getProducts(
     }
 // Hàm fetch theo sản phẩm
 
-@GetMapping("/products/{id}")
-public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-    Product product = productService.getProductById(id);
-    if (product != null) {
-        return ResponseEntity.ok(product);
-    } else {
-        return ResponseEntity.notFound().build();
+    @GetMapping("/products/{id}")
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
+        ProductResponse response = productService.getProductResponseById(id);
+        return ResponseEntity.ok(response);
     }
-}
+
 //    @GetMapping("/products/brand/{brand}")
 //    public ResponseEntity<resultPaginationDTO> getProductsByBrand(
 //            @PathVariable String brand,

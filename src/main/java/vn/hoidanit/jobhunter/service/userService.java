@@ -1,6 +1,7 @@
 package vn.hoidanit.jobhunter.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -162,4 +163,11 @@ public User findUserByEmail(String email) {
     public User fetchUserByEmail(String email) {
         return this.userRepository.findByEmail(email);
     }
+
+    // Unit Test
+    public User findUserById(Long id) {
+        Optional<User> user = this.userRepository.findById(id);
+        return user.orElse(null); // hoặc .orElseThrow() nếu muốn ném lỗi
+    }
+
 }

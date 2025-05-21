@@ -2,6 +2,7 @@ package vn.hoidanit.jobhunter;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import vn.hoidanit.jobhunter.domain.Cart;
 import vn.hoidanit.jobhunter.domain.CartItem;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,6 +66,7 @@ public class CartServiceTest {
         assertEquals(1, result.size());
         assertEquals(1, result.get(0).getQuantity());
     }
+
     @Test
     void testAddToCart_NewItem() {
         User user = new User();
@@ -83,4 +86,41 @@ public class CartServiceTest {
         assertNotNull(result);
     }
 
+    @Test
+    void testAddToCart_ExistingItem() {
+        User user = new User();
+        Product product = new Product();
+        product.setId(1L);
+        Cart cart = new Cart();
+        cart.setUser(user);
+
+        CartItem existingItem = new CartItem();
+        existingItem.setProduct(product);
+        existingItem.setQuantity(1);
+        existingItem.setCart(cart);
+
+        when(userRepository.findByEmail("user@example.com")).thenReturn(user);
+        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+        when(cartRepository.findByUser(user)).thenReturn(Optional.of(cart));
+        when(cartItemRepository.findByCart(cart)).thenReturn(List.of(existingItem));
+
+        List<CartItem> result = cartService.addToCart("user@example.com", 1L, 2);
+
+        assertEquals(3, existingItem.getQuantity());
+        verify(cartItemRepository).save(existingItem);
+        assertNotNull(result);
+    }
+
+//    @Test
+//    void testAddToCart_InvalidProduct() {
+//        User user = new User();
+//        when(userRepository.findByEmail("user@example.com")).thenReturn(user);
+//        when(productRepository.findById(99L)).thenReturn(Optional.empty());
+//
+//        Exception exception = assertThrows(RuntimeException.class, () -> {
+//            cartService.addToCart("user@example.com", 99L, 1);
+//        });
+//
+//        assertTrue(exception.getMessage().contains("Không tìm thấy sản phẩm"));
+//    }
 }

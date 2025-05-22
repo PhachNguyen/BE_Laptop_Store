@@ -40,6 +40,7 @@ public class CartController {
         // Nhận quantity từ FE, nếu không có thì mặc định là 1
         Integer quantity = body.get("quantity") != null ? Integer.valueOf(body.get("quantity").toString()) : 1;
         List<CartItem> updatedCart = cartService.addToCart(email, productId, quantity);
+
         return ResponseEntity.ok(updatedCart);
     }
 

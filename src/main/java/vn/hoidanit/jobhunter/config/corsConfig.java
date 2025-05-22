@@ -20,7 +20,7 @@ public class corsConfig {
 //                 Connect tới Mobile
                 "http://192.168.1.5:19006",    // nếu bạn chạy app bằng lệnh `expo start`
                 "exp://192.168.1.5:19000"    ,  // nếu bạn dùng Expo Go trên điện thoại
-                // ✅ Thêm dòng này để cho phép Android Emulator gọi API
+                //  Thêm dòng này để cho phép Android Emulator gọi API
                 "http://10.0.2.2:8080"
                 )); // Cho phép đường link này truy
                                                                                  // cập vào

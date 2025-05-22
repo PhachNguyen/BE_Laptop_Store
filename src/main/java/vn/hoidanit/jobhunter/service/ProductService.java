@@ -34,7 +34,7 @@ public class ProductService {
 public Page<Product> getAllProducts(Pageable pageable) {
     Page<Product> productPage = productRepo.findAll(pageable);
 
-    String baseUrl = "http://192.168.1.3:8080/storage/";
+    String baseUrl = "http://localhost:8080/storage/";
 
     productPage.getContent().forEach(product -> {
         List<String> fullUrls = product.getImages().stream()
@@ -51,7 +51,7 @@ public Page<Product> getAllProducts(Pageable pageable) {
         Product product = productRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Not found"));
 
-        String baseUrl = "http://192.168.1.3:8080/storage/product-" + product.getId() + "/";
+        String baseUrl = "http://localhost:8080/storage/product-" + product.getId() + "/";
         List<String> fullImageUrls = product.getImages().stream()
                 .map(fileName -> baseUrl + fileName)
                 .collect(Collectors.toList());
